@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import WelcomePage from "./pages/WelcomePage/WelcomePage";
+import RouteDetails from "./pages/RoutePage/RouteDetails";
 import "./App.css";
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<WelcomePage />} />
+        <Route path="/route-details/:routeNumber" element={<RouteDetails />} />
       </Routes>
     </BrowserRouter>
   );
