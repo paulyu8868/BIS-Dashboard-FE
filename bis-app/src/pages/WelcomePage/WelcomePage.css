@@ -1,0 +1,46 @@
+.welcome-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #2e1a5a;
+  height: 100vh;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem;
+  border-bottom: 2px solid white;
+}
+
+.home-icon {
+  position: absolute;
+  left: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.button-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+button {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  color: #2e1a5a;
+  background-color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #ddd;
+}
