@@ -1,0 +1,40 @@
+.route-selector h3 {
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bolder;
+  margin-bottom: 4rem;
+}
+
+.route-selector button {
+  margin: 5px 0;
+  padding: 10px;
+  font-size: 1rem;
+  color: #2e1a5a;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.route-selector button {
+  margin: 8px 0;
+  padding: 15px;
+  font-size: 2rem;
+  color: #2e1a5a;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.route-selector button:hover {
+  background-color: #ddd;
+}
+
+.simulator-button {
+  margin-top: 20px;
+  background-color: #4caf50;
+  color: white;
+}
