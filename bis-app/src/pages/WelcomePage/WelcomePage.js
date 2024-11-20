@@ -20,7 +20,7 @@ const WelcomePage = () => {
         <button onClick={() => handleNavigation("/simulator")}>
           시뮬레이터
         </button>
-        <button onClick={() => navigate("/route-details/1")}>노선 상세</button>
+        <button onClick={() => navigate("/route-details")}>노선 선택 및 상세</button>
       </div>
     </div>
   );
