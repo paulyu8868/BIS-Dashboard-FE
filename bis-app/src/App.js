@@ -1,16 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import SimulatorPage from "./pages/SimulatorPage/SimulatorPage";
 import WelcomePage from "./pages/WelcomePage/WelcomePage";
-import RouteDetailsPage from "./pages/RouteDetailsPage/RouteDetailsPage"; // 노선 상세 페이지 추가
-import "./App.css";
+import RouteDetailsPage from "./pages/RouteDetailsPage/RouteDetailsPage";
 
 function App() {
     return (
-        <BrowserRouter>
+        <Router>
             <Routes>
                 <Route path="/" element={<WelcomePage />} />
-                <Route path="/route-details" element={<RouteDetailsPage />} /> {/* 노선 선택 및 상세 경로 */}
+                <Route path="/route-details" element={<RouteDetailsPage />} />
+                <Route path="/simulator" element={<SimulatorPage />} />
             </Routes>
-        </BrowserRouter>
+        </Router>
     );
 }
 

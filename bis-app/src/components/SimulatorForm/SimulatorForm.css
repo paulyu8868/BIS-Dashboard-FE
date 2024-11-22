@@ -1,0 +1,54 @@
+.bus-form-container {
+    background-color: #003366;
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+}
+
+.bus-form-title {
+    text-align: center;
+}
+
+.bus-form-field {
+    margin-bottom: 15px;
+}
+
+.bus-form-label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.bus-form-input,
+.bus-form-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.bus-form-button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bus-form-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.bus-form-container {
+    background-color: #003366;
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    position: fixed; /* 고정 위치 설정 */
+    bottom: 4rem;
+    right: 4rem;
+    z-index: 1000; /* 레이어 순서 설정 (다른 요소 위에 표시) */
+}
