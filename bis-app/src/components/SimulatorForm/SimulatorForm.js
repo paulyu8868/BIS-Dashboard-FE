@@ -179,21 +179,6 @@ const SimulatorForm = ({ map, routes, setRoutes }) => {
         <div className="bus-form-container">
             <h2 className="bus-form-title">버스 정보 입력</h2>
             <div className="bus-form-field">
-                <label className="bus-form-label">버스 번호</label>
-                <select
-                    value={selectedBus}
-                    onChange={(e) => setSelectedBus(e.target.value)}
-                    className="bus-form-select"
-                >
-                    <option value="">버스를 선택하세요</option>
-                    {buses.map((bus) => (
-                        <option key={bus.busId} value={bus.busId}>
-                            {bus.busNo}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="bus-form-field">
                 <label className="bus-form-label">노선 번호</label>
                 <select
                     value={selectedRoute}
@@ -204,6 +189,21 @@ const SimulatorForm = ({ map, routes, setRoutes }) => {
                     {routes.map((route) => (
                         <option key={route.routeId} value={route.routeId}>
                             {route.routeName}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div className="bus-form-field">
+                <label className="bus-form-label">버스 번호</label>
+                <select
+                    value={selectedBus}
+                    onChange={(e) => setSelectedBus(e.target.value)}
+                    className="bus-form-select"
+                >
+                    <option value="">버스를 선택하세요</option>
+                    {buses.map((bus) => (
+                        <option key={bus.busId} value={bus.busId}>
+                            {bus.busNo}
                         </option>
                     ))}
                 </select>
