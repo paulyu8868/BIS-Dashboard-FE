@@ -2,127 +2,161 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import RouteMap from "../../components/RouteMap/RouteMap";
+import RouteDetailModal from "../../components/RouteDetailModal/RouteDetailModal";
 import "./RouteDetailsPage.css";
 
 const RouteDetailsPage = () => {
-    const routeMapping = {
-        1: "307000010",
-        2: "307000020",
-        3: "307000030",
-        4: "307000070",
-        5: "307000080",
-        6: "307000090",
-        7: "307000100",
-        8: "307000110",
-        9: "307000120",
-        10: "307000130"
+  const routeMapping = {
+    1: "307000010",
+    2: "307000020",
+    3: "307000030",
+    4: "307000070",
+    5: "307000080",
+    6: "307000090",
+    7: "307000100",
+    8: "307000110",
+    9: "307000120",
+    10: "307000130",
+  };
+
+  const [selectedRoutes, setSelectedRoutes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const routeCache = useRef({});
+  const [routes, setRoutes] = useState([]); // 노선 데이터
+  const [modalRoute, setModalRoute] = useState(null); // 모달에 표시할 노선
+  const navigate = useNavigate();
+
+  const fetchRouteData = async (routeId) => {
+    if (routeCache.current[routeId]) {
+      console.log(`Using cached data for route ${routeId}`);
+      return routeCache.current[routeId];
+    }
+
+    const [busStopsResponse, verticesResponse] = await Promise.all([
+      fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/route/busstops/${routeId}`
+      ),
+      fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/route/vertices/${routeId}`
+      ),
+    ]);
+
+    if (!busStopsResponse.ok || !verticesResponse.ok) {
+      throw new Error("Failed to fetch route data");
+    }
+
+    const [busStopsData, verticesData] = await Promise.all([
+      busStopsResponse.json(),
+      verticesResponse.json(),
+    ]);
+
+    const routeData = {
+      busStops: busStopsData,
+      vertices: verticesData,
     };
+    routeCache.current[routeId] = routeData;
 
-   const [selectedRoutes, setSelectedRoutes] = useState([]);
-   const [isLoading, setIsLoading] = useState(false);
-   const routeCache = useRef({});
-   const navigate = useNavigate();
+    return routeData;
+  };
 
-   const fetchRouteData = async (routeId) => {
-       if (routeCache.current[routeId]) {
-           console.log(`Using cached data for route ${routeId}`);
-           return routeCache.current[routeId];
-       }
+  const handleRouteClick = async (routeNumber) => {
+    try {
+      const routeId = routeMapping[routeNumber];
 
-       const [busStopsResponse, verticesResponse] = await Promise.all([
-           fetch(`${process.env.REACT_APP_BACKEND_URL}/api/route/busstops/${routeId}`),
-           fetch(`${process.env.REACT_APP_BACKEND_URL}/api/route/vertices/${routeId}`)
-       ]);
+      if (selectedRoutes.some((r) => r.routeId === routeId)) {
+        setSelectedRoutes((prev) => prev.filter((r) => r.routeId !== routeId));
+        return;
+      }
 
-       if (!busStopsResponse.ok || !verticesResponse.ok) {
-           throw new Error("Failed to fetch route data");
-       }
+      setIsLoading(true);
 
-       const [busStopsData, verticesData] = await Promise.all([
-           busStopsResponse.json(),
-           verticesResponse.json()
-       ]);
+      const routeData = await fetchRouteData(routeId);
 
-       const routeData = {
-           busStops: busStopsData,
-           vertices: verticesData
-       };
-       routeCache.current[routeId] = routeData;
-       
-       return routeData;
-   };
+      const formattedRouteData = {
+        routeId,
+        routeNumber,
+        busStops: routeData.busStops,
+        vertices: routeData.vertices,
+      };
 
-   const handleRouteClick = async (routeNumber) => {
-       try {
-           const routeId = routeMapping[routeNumber];
-           
-           if (selectedRoutes.some((r) => r.routeId === routeId)) {
-               setSelectedRoutes((prev) =>
-                   prev.filter((r) => r.routeId !== routeId)
-               );
-               return;
-           }
+      setSelectedRoutes((prev) => [...prev, formattedRouteData]);
+    } catch (error) {
+      console.error("Error fetching route data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-           setIsLoading(true);
-           
-           const routeData = await fetchRouteData(routeId);
+  const handleSimulatorStart = () => {
+    navigate("/simulator");
+  };
 
-           const formattedRouteData = {
-               routeId,
-               routeNumber,
-               busStops: routeData.busStops,
-               vertices: routeData.vertices
-           };
+  const handleDetailClick = (routeId, routeNumber) => {
+    setModalRoute({
+      routeId,
+      routeNumber,
+    });
+  };
 
-           setSelectedRoutes((prev) => [...prev, formattedRouteData]);
+  const closeModal = () => {
+    setModalRoute(null);
+  };
 
-       } catch (error) {
-           console.error("Error fetching route data:", error);
-       } finally {
-           setIsLoading(false);
-       }
-   };
+  return (
+    <div className="route-details-page">
+      <Header />
+      <div className="sidebar">
+        <h2>노선</h2>
+        {Array.from({ length: 10 }, (_, i) => i + 1).map((routeNumber) => (
+          <div className="route-item">
+            <button
+              key={routeNumber}
+              className={`route-button ${
+                selectedRoutes.some(
+                  (r) => r.routeId === routeMapping[routeNumber]
+                )
+                  ? "selected"
+                  : ""
+              } ${isLoading ? "disabled" : ""}`}
+              onClick={() => handleRouteClick(routeNumber)}
+              disabled={isLoading}>
+              {routeNumber}번 노선
+              {routeCache.current[routeMapping[routeNumber]] &&
+                !selectedRoutes.some(
+                  (r) => r.routeId === routeMapping[routeNumber]
+                ) &&
+                ""}
+            </button>
+            <button
+              className="detail-button"
+              onClick={() =>
+                handleDetailClick(routeMapping[routeNumber], routeNumber)
+              }>
+              +
+            </button>
+          </div>
+        ))}
+        <button
+          className="simulator-button"
+          onClick={handleSimulatorStart}
+          disabled={isLoading}>
+          시뮬레이터 작동
+        </button>
+      </div>
 
-   const handleSimulatorStart = () => {
-       navigate("/simulator");
-   };
+      <div className="map-container">
+        <RouteMap routes={selectedRoutes} />
+      </div>
 
-   return (
-       <div className="route-details-page">
-           <Header />
-           <div className="sidebar">
-               <h2>노선</h2>
-               {Array.from({ length: 10 }, (_, i) => i + 1).map((routeNumber) => (
-                   <button
-                       key={routeNumber}
-                       className={`route-button ${
-                           selectedRoutes.some((r) => r.routeId === routeMapping[routeNumber])
-                               ? "selected"
-                               : ""
-                       } ${isLoading ? "disabled" : ""}`}
-                       onClick={() => handleRouteClick(routeNumber)}
-                       disabled={isLoading}
-                   >
-                       {routeNumber}번 노선
-                       {routeCache.current[routeMapping[routeNumber]] && 
-                        !selectedRoutes.some((r) => r.routeId === routeMapping[routeNumber]) && 
-                        ""}
-                   </button>
-               ))}
-               <button 
-                   className="simulator-button" 
-                   onClick={handleSimulatorStart}
-                   disabled={isLoading}
-               >
-                   시뮬레이터 작동
-               </button>
-           </div>
-           
-           <div className="map-container">
-               <RouteMap routes={selectedRoutes} />
-           </div>
-       </div>
-   );
+      {modalRoute && (
+        <RouteDetailModal
+          routeId={modalRoute.routeId}
+          routeNumber={modalRoute.routeNumber}
+          onClose={closeModal}
+        />
+      )}
+    </div>
+  );
 };
 
 export default RouteDetailsPage;

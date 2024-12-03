@@ -1,137 +1,157 @@
 .route-details-page {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #f0f0f0;
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f0f0f0;
+  overflow: hidden;
 }
 
 .sidebar {
-    width: 250px;
-    background-color: #14213d;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem;
-    border-right: 1px solid #ddd;
-    height: calc(100vh - 5rem);
-    position: fixed;
-    top: 5rem;
-    left: 0;
-    z-index: 1000;
+  width: 250px;
+  background-color: #14213d;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border-right: 1px solid #ddd;
+  height: calc(100vh - 5rem);
+  position: fixed;
+  top: 5rem;
+  left: 0;
+  z-index: 1000;
 }
 
 .sidebar h2 {
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
 }
 
 .route-button {
-    width: 90%;
-    padding: 0.8rem;
-    margin: 0.5rem 0;
-    font-size: 0.9rem;
-    color: #14213d;
-    background-color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
+  width: 90%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #14213d;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .route-button:hover {
-    background-color: #ddd;
+  background-color: #ddd;
 }
 
 .route-button.selected {
-    background-color: #e63946;
-    color: white;
+  background-color: #e63946;
+  color: white;
 }
 
 .map-container {
-    flex: 1;
-    margin-left: 250px;
-    height: calc(100vh - 5rem);
-    background-color: #f5f5f5;
-    position: relative;
+  flex: 1;
+  margin-left: 250px;
+  height: calc(100vh - 5rem);
+  background-color: #f5f5f5;
+  position: relative;
 }
 
 /* 시뮬레이터 버튼 */
 .simulator-button {
-    width: 90%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    font-size: 1rem;
-    color: white;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
+  width: 90%;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .simulator-button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 /* 시뮬레이터 창 */
 .simulator-container {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    width: 300px;
-    padding: 1rem;
-    background-color: #14213d;
-    color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 300px;
+  padding: 1rem;
+  background-color: #14213d;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
 .simulator-header {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-align: center;
 }
 
 .simulator-input {
-    width: 100%;
-    margin: 0.5rem 0;
-    padding: 0.5rem;
-    border: none;
-    border-radius: 5px;
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 5px;
 }
 
 .simulator-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
 }
 
 .simulator-buttons button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .simulator-buttons .start-button {
-    background-color: #007bff;
-    color: white;
+  background-color: #007bff;
+  color: white;
 }
 
 .simulator-buttons .start-button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 .simulator-buttons .cancel-button {
-    background-color: #6c757d;
-    color: white;
+  background-color: #6c757d;
+  color: white;
 }
 
 .simulator-buttons .cancel-button:hover {
-    background-color: #495057;
+  background-color: #495057;
+}
+
+.route-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.detail-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.detail-button:hover {
+  background-color: #45a049;
 }

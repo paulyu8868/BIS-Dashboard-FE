@@ -1,5 +1,5 @@
 .route-map {
-    width: 100%; /* 가로 전체 채우기 */
-    height: 100%; /* 세로 전체 채우기 */
-    border: none;
+  width: 100%; /* 가로 전체 채우기 */
+  height: 100%; /* 세로 전체 채우기 */
+  border: none;
 }
