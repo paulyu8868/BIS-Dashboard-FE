@@ -1,112 +1,131 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import "./RouteMap.css";
 
-const RouteMap = ({ routes }) => {
-    useEffect(() => {
-        const script = document.createElement("script");
-        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_API_KEY}&autoload=false`;
-        script.async = true;
-        document.head.appendChild(script);
+export default function RouteMap({ routes }) {
+  const mapRef = useRef(null);
+  const mapObjectsRef = useRef({
+    polylines: [],
+    markers: [],
+    infoWindows: [],
+  });
 
-        script.onload = () => {
-            if (!window.kakao || !window.kakao.maps) {
-                console.error("Kakao Maps API failed to load.");
-                return;
-            }
+  const clearMapObjects = React.useCallback(() => {
+    mapObjectsRef.current.polylines.forEach((polyline) =>
+      polyline.setMap(null)
+    );
+    mapObjectsRef.current.markers.forEach((marker) => marker.setMap(null));
+    mapObjectsRef.current.infoWindows.forEach((infoWindow) =>
+      infoWindow.close()
+    );
 
-            window.kakao.maps.load(() => {
-                const container = document.getElementById("map");
-                if (!container) {
-                    console.error("Map container (div with id 'map') not found.");
-                    return;
-                }
+    mapObjectsRef.current = {
+      polylines: [],
+      markers: [],
+      infoWindows: [],
+    };
+  }, []);
 
-                const options = {
-                    center: new window.kakao.maps.LatLng(35.9259206, 126.6156607),
-                    level: 7,
-                };
+  const updateRoutes = React.useCallback(() => {
+    if (!mapRef.current) return;
 
-                const map = new window.kakao.maps.Map(container, options);
+    clearMapObjects();
 
-                // 노선 색상 배열 (순환 가능)
-                const colors = [
-                    "#FF0000", // 빨강
-                    "#0000FF", // 파랑
-                    "#008000", // 초록
-                    "#FFA500", // 주황
-                    "#800080", // 보라
-                    "#00FFFF", // 청록
-                    "#FFC0CB", // 분홍
-                    "#808080", // 회색
-                    "#FFFF00", // 노랑
-                    "#8B4513", // 갈색
-                ];
+    const colors = [
+      "#FF0000",
+      "#0000FF",
+      "#008000",
+      "#FFA500",
+      "#800080",
+      "#00FFFF",
+      "#FFC0CB",
+      "#808080",
+      "#FFFF00",
+      "#8B4513",
+    ];
 
-                // 여러 노선을 지도에 표시
-                routes.forEach((route, index) => {
-                    const color = colors[index % colors.length]; // 노선마다 고유 색상 지정
+    routes.forEach((route, index) => {
+      const color = colors[index % colors.length];
 
-                    // 폴리라인 그리기
-                    if (route.links) {
-                        route.links.forEach((link) => {
-                            const path = link.vertices.map(
-                                (vertex) =>
-                                    new window.kakao.maps.LatLng(vertex.ycord, vertex.xcord)
-                            );
+      if (route.vertices && route.vertices.length > 0) {
+        const path = route.vertices.map(
+          (vertex) => new window.kakao.maps.LatLng(vertex.ycord, vertex.xcord)
+        );
 
-                            const polyline = new window.kakao.maps.Polyline({
-                                path,
-                                strokeWeight: 5,
-                                strokeColor: color, // 각 노선의 고유 색상
-                                strokeOpacity: 0.7,
-                                strokeStyle: "solid",
-                            });
+        const polyline = new window.kakao.maps.Polyline({
+          path,
+          strokeWeight: 5,
+          strokeColor: color,
+          strokeOpacity: 0.7,
+          strokeStyle: "solid",
+        });
 
-                            polyline.setMap(map);
-                        });
-                    }
+        polyline.setMap(mapRef.current);
+        mapObjectsRef.current.polylines.push(polyline);
+      }
 
-                    // 마커 추가
-                    if (route.busStops) {
-                        route.busStops.forEach((stop) => {
-                            const position = new window.kakao.maps.LatLng(
-                                stop.ycord,
-                                stop.xcord
-                            );
+      if (route.busStops && route.busStops.length > 0) {
+        route.busStops.forEach((stop) => {
+          const position = new window.kakao.maps.LatLng(stop.ycord, stop.xcord);
 
-                            const marker = new window.kakao.maps.Marker({
-                                position,
-                                map,
-                            });
+          const marker = new window.kakao.maps.Marker({
+            position,
+            map: mapRef.current,
+          });
 
-                            const infowindow = new window.kakao.maps.InfoWindow({
-                                content: `<div style="padding:5px;">${stop.busStopName}</div>`,
-                            });
+          const infowindow = new window.kakao.maps.InfoWindow({
+            content: `<div style="padding:5px;">${stop.busStopName}</div>`,
+            removable: false,
+          });
 
-                            window.kakao.maps.event.addListener(marker, "mouseover", () => {
-                                infowindow.open(map, marker);
-                            });
+          window.kakao.maps.event.addListener(marker, "mouseover", () =>
+            infowindow.open(mapRef.current, marker)
+          );
+          window.kakao.maps.event.addListener(marker, "mouseout", () =>
+            infowindow.close()
+          );
 
-                            window.kakao.maps.event.addListener(marker, "mouseout", () => {
-                                infowindow.close();
-                            });
-                        });
-                    }
-                });
-            });
+          mapObjectsRef.current.markers.push(marker);
+          mapObjectsRef.current.infoWindows.push(infowindow);
+        });
+      }
+    });
+  }, [routes, clearMapObjects]);
+
+  const initializeMap = React.useCallback(() => {
+    window.kakao.maps.load(() => {
+      if (!mapRef.current) {
+        const container = document.getElementById("map");
+        const options = {
+          center: new window.kakao.maps.LatLng(35.9259206, 126.6156607),
+          level: 7,
         };
+        mapRef.current = new window.kakao.maps.Map(container, options);
+      }
+      updateRoutes();
+    });
+  }, [updateRoutes]);
 
-        return () => {
-            const scriptTags = Array.from(document.head.getElementsByTagName("script"));
-            scriptTags.forEach((tag) => {
-                if (tag.src.includes("kakao.com")) {
-                    document.head.removeChild(tag);
-                }
-            });
-        };
-    }, [routes]);
+  useEffect(() => {
+    if (!window.kakao) {
+      const script = document.createElement("script");
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_API_KEY}&autoload=false`;
+      script.async = true;
+      document.head.appendChild(script);
 
-    return <div id="map" className="route-map"></div>;
-};
+      script.onload = () => initializeMap();
+    } else {
+      initializeMap();
+    }
 
-export default RouteMap;
+    return () => {
+      clearMapObjects();
+    };
+  }, [initializeMap, clearMapObjects]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+    updateRoutes();
+  }, [updateRoutes]);
+
+  return <div id="map" className="route-map"></div>;
+}

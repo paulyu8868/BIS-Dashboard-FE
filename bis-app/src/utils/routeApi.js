@@ -1,5 +1,5 @@
 export async function fetchRouteStops(route_id) {
-  const url = `${process.env.REACT_APP_BACKEND_URL}/api/route/${route_id}/stops`;
+  const url = `${process.env.REACT_APP_BACKEND_URL}/api/route/busstops/${route_id}`;
 
   try {
     const response = await fetch(url);
@@ -10,8 +10,9 @@ export async function fetchRouteStops(route_id) {
     const data = await response.json();
 
     return data.map((stop) => ({
-      name: stop.busStopName,
-      id: stop.busStopId,
+      name: stop.bstpNm,
+      id: stop.bstpId,
+      sqno: stop.pointSqno,
     }));
   } catch (error) {
     console.error("Failed to fetch route stops:", error);
