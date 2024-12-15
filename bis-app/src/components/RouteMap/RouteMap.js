@@ -73,7 +73,7 @@ export default function RouteMap({ routes }) {
           });
 
           const infowindow = new window.kakao.maps.InfoWindow({
-            content: `<div style="padding:5px;">${stop.busStopName}</div>`,
+            content: `<div style="padding:5px;">${stop.bstpNm}</div>`,
             removable: false,
           });
 
