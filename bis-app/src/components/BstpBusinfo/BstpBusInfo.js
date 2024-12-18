@@ -1,6 +1,6 @@
 import React from "react";
 import "./BstpBusInfo.css";
-
+// 정류장 메세지 띄울 때 쓰는 컴포넌트
 const BstpBusInfo = ({ stationInfo }) => {
     if (!stationInfo) {
         return <p className="loading-text">정보를 불러오는 중...</p>;
