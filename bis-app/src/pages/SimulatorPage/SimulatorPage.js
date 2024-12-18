@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // 페이지 이동을 위한 import
 import Header from "../../components/Header/Header";
 import SimulatorForm from "../../components/SimulatorForm/SimulatorForm"; // 새로운 컴포넌트 임포트
 import "./SimulatorPage.css";
@@ -6,6 +7,7 @@ import "./SimulatorPage.css";
 const SimulatorPage = () => {
     const [routes, setRoutes] = useState([]); // 노선 데이터
     const [map, setMap] = useState(null); // 카카오 맵 객체
+    const navigate = useNavigate(); // 페이지 이동을 위한 hook
 
     // 카카오 맵 초기화
     useEffect(() => {
@@ -47,12 +49,21 @@ const SimulatorPage = () => {
         };
     }, []);
 
+    const goToRouteDetails = () => {
+        navigate("/route-details"); // RouteDetailsPage로 이동
+    };
+
     return (
         <div className="simulator-page">
             <Header />
             <div id="map" className="full-map"></div>
             {/* SimulatorForm 컴포넌트 추가 */}
             <SimulatorForm map={map} routes={routes} setRoutes={setRoutes} />
+
+            {/* 노선 상세 페이지 버튼 */}
+            <button className="route-details-button" onClick={goToRouteDetails}>
+                노선 상세 페이지
+            </button>
         </div>
     );
 };

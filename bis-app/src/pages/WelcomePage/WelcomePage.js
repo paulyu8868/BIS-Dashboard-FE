@@ -14,13 +14,12 @@ const WelcomePage = () => {
     <div className="welcome-page">
       <Header />
       <div className="button-container">
-        <button onClick={() => handleNavigation("/bis-status")}>
-          BIS 현황판
-        </button>
         <button onClick={() => handleNavigation("/simulator")}>
           시뮬레이터
         </button>
-        <button onClick={() => navigate("/route-details")}>노선 선택 및 상세</button>
+        <button onClick={() => navigate("/route-details")}>
+          노선 선택 및 상세
+        </button>
       </div>
     </div>
   );

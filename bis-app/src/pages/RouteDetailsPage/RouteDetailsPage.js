@@ -1,8 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import RouteMap from "../../components/RouteMap/RouteMap";
 import RouteDetailModal from "../../components/RouteDetailModal/RouteDetailModal";
+import CarbonCalculator from "../../components/CarbonCalculator/CarbonCalculator"; // 탄소 계산기 컴포넌트 import
 import "./RouteDetailsPage.css";
 
 const RouteDetailsPage = () => {
@@ -22,8 +23,10 @@ const RouteDetailsPage = () => {
   const [selectedRoutes, setSelectedRoutes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const routeCache = useRef({});
-  const [routes, setRoutes] = useState([]); // 노선 데이터
-  const [modalRoute, setModalRoute] = useState(null); // 모달에 표시할 노선
+  const [routes, setRoutes] = useState([]);
+  const [modalRoute, setModalRoute] = useState(null);
+  const [map, setMap] = useState(null); // 카카오 맵 객체
+  const [markers, setMarkers] = useState([]); // 정류장 마커 정보
   const navigate = useNavigate();
 
   const fetchRouteData = async (routeId) => {
@@ -33,12 +36,8 @@ const RouteDetailsPage = () => {
     }
 
     const [busStopsResponse, verticesResponse] = await Promise.all([
-      fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/route/busstops/${routeId}`
-      ),
-      fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/route/vertices/${routeId}`
-      ),
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/api/route/busstops/${routeId}`),
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/api/route/vertices/${routeId}`),
     ]);
 
     if (!busStopsResponse.ok || !verticesResponse.ok) {
@@ -80,6 +79,7 @@ const RouteDetailsPage = () => {
       };
 
       setSelectedRoutes((prev) => [...prev, formattedRouteData]);
+      setMarkers(routeData.busStops); // 마커 설정
     } catch (error) {
       console.error("Error fetching route data:", error);
     } finally {
@@ -103,59 +103,56 @@ const RouteDetailsPage = () => {
   };
 
   return (
-    <div className="route-details-page">
-      <Header />
-      <div className="sidebar">
-        <h2>노선</h2>
-        {Array.from({ length: 10 }, (_, i) => i + 1).map((routeNumber) => (
-          <div className="route-item">
-            <button
-              key={routeNumber}
-              className={`route-button ${
-                selectedRoutes.some(
-                  (r) => r.routeId === routeMapping[routeNumber]
-                )
-                  ? "selected"
-                  : ""
-              } ${isLoading ? "disabled" : ""}`}
-              onClick={() => handleRouteClick(routeNumber)}
+      <div className="route-details-page">
+        <Header />
+        <div className="sidebar">
+          <h2>노선</h2>
+          {Array.from({ length: 10 }, (_, i) => i + 1).map((routeNumber) => (
+              <div className="route-item" key={routeNumber}>
+                <button
+                    className={`route-button ${
+                        selectedRoutes.some((r) => r.routeId === routeMapping[routeNumber])
+                            ? "selected"
+                            : ""
+                    } ${isLoading ? "disabled" : ""}`}
+                    onClick={() => handleRouteClick(routeNumber)}
+                    disabled={isLoading}>
+                  {routeNumber}번 노선
+                </button>
+                <button
+                    className="detail-button"
+                    onClick={() =>
+                        handleDetailClick(routeMapping[routeNumber], routeNumber)
+                    }>
+                  +
+                </button>
+              </div>
+          ))}
+          <button
+              className="simulator-button"
+              onClick={handleSimulatorStart}
               disabled={isLoading}>
-              {routeNumber}번 노선
-              {routeCache.current[routeMapping[routeNumber]] &&
-                !selectedRoutes.some(
-                  (r) => r.routeId === routeMapping[routeNumber]
-                ) &&
-                ""}
-            </button>
-            <button
-              className="detail-button"
-              onClick={() =>
-                handleDetailClick(routeMapping[routeNumber], routeNumber)
-              }>
-              +
-            </button>
-          </div>
-        ))}
-        <button
-          className="simulator-button"
-          onClick={handleSimulatorStart}
-          disabled={isLoading}>
-          시뮬레이터 작동
-        </button>
-      </div>
+            시뮬레이터 작동
+          </button>
+        </div>
 
-      <div className="map-container">
-        <RouteMap routes={selectedRoutes} />
-      </div>
+        <div className="map-container">
+          <RouteMap routes={selectedRoutes} />
+        </div>
 
-      {modalRoute && (
-        <RouteDetailModal
-          routeId={modalRoute.routeId}
-          routeNumber={modalRoute.routeNumber}
-          onClose={closeModal}
-        />
-      )}
-    </div>
+        {/* 탄소 배출량 계산기 추가 */}
+        <div className="carbon-calculator-panel">
+          <CarbonCalculator map={map} markers={markers} />
+        </div>
+
+        {modalRoute && (
+            <RouteDetailModal
+                routeId={modalRoute.routeId}
+                routeNumber={modalRoute.routeNumber}
+                onClose={closeModal}
+            />
+        )}
+      </div>
   );
 };
 

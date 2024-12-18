@@ -41,3 +41,34 @@ export async function fetchRouteBusesWithStops(route_id) {
     return [];
   }
 }
+
+// 정류장 및 버스 도착 정보 조회
+export async function fetchStationInfo(stop_id) {
+  const url = `${process.env.REACT_APP_BACKEND_URL}/api/station/${stop_id}/info`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return {
+      stopName: data.bstpNm,
+      bitType: data.bitType,
+      nextStop: data.nextBstpNm,
+      busNumber: data.busNo,
+      checkDate: data.checkDate,
+      capacity: data.capacity,
+      company: data.busCompany,
+      arrivals: data.arrivals.map((arrival) => ({
+        busNumber: arrival.busNo,
+        eta: arrival.eta,
+      })),
+    };
+  } catch (error) {
+    console.error("Failed to fetch station info:", error);
+    return null;
+  }
+}

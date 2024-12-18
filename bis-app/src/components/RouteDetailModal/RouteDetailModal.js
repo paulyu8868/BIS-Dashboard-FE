@@ -3,6 +3,7 @@ import {
   fetchRouteStops,
   fetchRouteBusesWithStops,
 } from "../../utils/routeApi";
+import BstpBusInfo from "../BstpBusinfo/BstpBusInfo"; // 정류장 및 버스 정보 컴포넌트 import
 import "./RouteDetailModal.css";
 import busIcon from "../../images/bus_icon.png";
 
@@ -14,6 +15,8 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
     end: "",
   });
   const [lastStopSqno, setLastStopSqno] = useState(null); // 마지막 정류장의 sqno
+  const [stationInfo, setStationInfo] = useState(null); // 정류장 및 버스 정보 Mock 데이터
+  const [selectedStop, setSelectedStop] = useState(null); // 선택된 정류장 정보
 
   // 시뮬레이터가 구현되면 사용할 배열
   //const [buses, setBuses] = useState([]);
@@ -25,6 +28,21 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
     { obuId: "125712002", sqno: 209 },
     { obuId: "125712011", sqno: 201 },
   ];
+
+  // 정류장 및 버스 정보 mock date도 임시로 추가했습니다. 시뮬레이터 구현 완료되면 지우고 BstpBusInfo에서 데이터 받아오게 해서 쓸 예정
+  const mockStationInfo = {
+    stopName: "중앙역",
+    bitType: "LCD",
+    nextStop: "시청역",
+    busNumber: "101",
+    checkDate: "2024-01-10",
+    capacity: "40명",
+    company: "서울교통공사",
+    arrivals: [
+      { busNumber: "101", eta: "5분" },
+      { busNumber: "201", eta: "12분" },
+    ],
+  };
 
   useEffect(() => {
     if (routeId) {
@@ -38,16 +56,11 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
         const lastSqno = stopsData[stopsData.length - 1]?.sqno; // 마지막 정류장의 sqno 설정
         setLastStopSqno(lastSqno);
 
-        /* 이 부분은 시뮬레이터가 구현되어 sqno를 불러올 수 있을 때 사용
-        // 마지막 정류장의 sqno가 설정된 후, fetchRouteBusesWithStops 실행
-        fetchRouteBusesWithStops(routeId).then((busesData) => {
-          const updatedBusesData = busesData.map((bus) => ({
-            ...bus,
-            sqno: bus.sqno ?? lastSqno, // null인 경우 lastStopSqno로 대체
-          }));
-          setBuses(updatedBusesData);
-        });
-        */
+        // 첫 번째 정류장을 기본 선택
+        if (stopsData.length > 0) {
+          setSelectedStop(stopsData[0]);
+          setStationInfo(mockStationInfo); // Mock 데이터 사용
+        }
       });
     }
   }, [routeId]);
@@ -59,63 +72,71 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
   }
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-body">
-          <div className="modal-header">
-            {routeNumber}번 노선
-            <button className="close-button" onClick={onClose}>
-              닫기
-            </button>
-          </div>
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <div className="modal-body">
+            <div className="modal-header">
+              {routeNumber}번 노선
+              <button className="close-button" onClick={onClose}>
+                닫기
+              </button>
+            </div>
 
-          {/* 노선 정보 */}
-          <div className="route-path-info">
-            <span>{routeInfo.start}</span> &gt; <span>{routeInfo.middle}</span>{" "}
-            &gt; <span>{routeInfo.end}</span>
-          </div>
+            <div className="content-container">
+              {/* 노선 정보 및 정류장 리스트 */}
+              <div className="route-map">
+                <div className="route-path-info">
+                  <span>{routeInfo.start}</span> &gt;{" "}
+                  <span>{routeInfo.middle}</span> &gt;{" "}
+                  <span>{routeInfo.end}</span>
+                </div>
+                {chunkedStops.map((stopGroup, groupIndex) => (
+                    <div
+                        key={groupIndex}
+                        className="route-line"
+                        style={{
+                          justifyContent:
+                              groupIndex % 2 === 0 ? "flex-start" : "flex-end",
+                        }}>
+                      {stopGroup.map((stop, index) => (
+                          <React.Fragment key={index}>
+                            <div
+                                className="stop-group"
+                                onClick={() => setSelectedStop(stop)}
+                                style={{ cursor: "pointer" }}>
+                              <div className="stop">
+                                <div className="stop-circle"></div>
+                                <span className="stop-name">{stop.name}</span>
 
-          {/* 정류장 리스트 */}
-          <div className="route-map">
-            {chunkedStops.map((stopGroup, groupIndex) => (
-              <div
-                key={groupIndex}
-                className="route-line"
-                style={{
-                  justifyContent:
-                    groupIndex % 2 === 0 ? "flex-start" : "flex-end",
-                }}>
-                {stopGroup.map((stop, index) => (
-                  <React.Fragment key={index}>
-                    <div className="stop-group">
-                      <div className="stop">
-                        <div className="stop-circle"></div>
-                        <span className="stop-name">{stop.name}</span>
-
-                        {/* 버스가 해당 정류장에 있을 경우 버스 아이콘 표시 */}
-                        {buses.some((bus) => bus.sqno === stop.sqno) && (
-                          <div className="bus-icon">
-                            {/* 이미지 크기를 원과 일치시키기 위한 스타일 추가 */}
-                            <img
-                              src={busIcon}
-                              alt="Bus"
-                              className="bus-image"
-                            />
-                          </div>
-                        )}
-                      </div>
-                      {index < stopGroup.length - 1 && (
-                        <div className="route-line-connector"></div>
-                      )}
+                                {/* 버스가 해당 정류장에 있을 경우 버스 아이콘 표시 */}
+                                {buses.some((bus) => bus.sqno === stop.sqno) && (
+                                    <div className="bus-icon">
+                                      <img
+                                          src={busIcon}
+                                          alt="Bus"
+                                          className="bus-image"
+                                      />
+                                    </div>
+                                )}
+                              </div>
+                              {index < stopGroup.length - 1 && (
+                                  <div className="route-line-connector"></div>
+                              )}
+                            </div>
+                          </React.Fragment>
+                      ))}
                     </div>
-                  </React.Fragment>
                 ))}
               </div>
-            ))}
+
+              {/* 정류장 및 버스 정보 패널 */}
+              <div className="station-info-panel">
+                <BstpBusInfo stationInfo={stationInfo} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

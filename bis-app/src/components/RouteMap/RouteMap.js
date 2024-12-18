@@ -11,11 +11,11 @@ export default function RouteMap({ routes }) {
 
   const clearMapObjects = React.useCallback(() => {
     mapObjectsRef.current.polylines.forEach((polyline) =>
-      polyline.setMap(null)
+        polyline.setMap(null)
     );
     mapObjectsRef.current.markers.forEach((marker) => marker.setMap(null));
     mapObjectsRef.current.infoWindows.forEach((infoWindow) =>
-      infoWindow.close()
+        infoWindow.close()
     );
 
     mapObjectsRef.current = {
@@ -46,9 +46,10 @@ export default function RouteMap({ routes }) {
     routes.forEach((route, index) => {
       const color = colors[index % colors.length];
 
+      // 버스 경로 표시
       if (route.vertices && route.vertices.length > 0) {
         const path = route.vertices.map(
-          (vertex) => new window.kakao.maps.LatLng(vertex.ycord, vertex.xcord)
+            (vertex) => new window.kakao.maps.LatLng(vertex.ycord, vertex.xcord)
         );
 
         const polyline = new window.kakao.maps.Polyline({
@@ -63,6 +64,7 @@ export default function RouteMap({ routes }) {
         mapObjectsRef.current.polylines.push(polyline);
       }
 
+      // 버스 정류장 마커 및 InfoWindow 설정
       if (route.busStops && route.busStops.length > 0) {
         route.busStops.forEach((stop) => {
           const position = new window.kakao.maps.LatLng(stop.ycord, stop.xcord);
@@ -72,16 +74,29 @@ export default function RouteMap({ routes }) {
             map: mapRef.current,
           });
 
+          // InfoWindow에 정류장명 및 도착 예정 정보 표시
+          const infowindowContent = `
+            <div style="padding:10px; font-size:12px; line-height:1.5;">
+              <strong>정류장:</strong> ${stop.bstpNm} <br/>
+              <strong>도착 예정:</strong> ${
+              stop.arrivals && stop.arrivals.length > 0
+                  ? stop.arrivals
+                      .map((arrival) => `${arrival.busNumber}번 - ${arrival.eta}`)
+                      .join(", ")
+                  : "정보 없음"
+          }
+            </div>`;
+
           const infowindow = new window.kakao.maps.InfoWindow({
-            content: `<div style="padding:5px;">${stop.bstpNm}</div>`,
+            content: infowindowContent,
             removable: false,
           });
 
           window.kakao.maps.event.addListener(marker, "mouseover", () =>
-            infowindow.open(mapRef.current, marker)
+              infowindow.open(mapRef.current, marker)
           );
           window.kakao.maps.event.addListener(marker, "mouseout", () =>
-            infowindow.close()
+              infowindow.close()
           );
 
           mapObjectsRef.current.markers.push(marker);

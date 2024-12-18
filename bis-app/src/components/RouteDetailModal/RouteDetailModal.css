@@ -124,3 +124,33 @@
 .bus-image {
   width: 34px;
 }
+
+.content-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  height: 100%;
+}
+
+.route-map {
+  flex: 2; /* 왼쪽 노선 정보 */
+  overflow-y: auto;
+}
+
+.station-info-panel {
+  flex: 1; /* 오른쪽 정류장 및 버스 정보 */
+  background-color: #f9f9f9;
+  border-left: 1px solid #ccc;
+  border-radius: 8px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.carbon-calculator-panel {
+  position: absolute;
+  top: 5rem; /* Header 아래에 위치 */
+  right: 1rem;
+  z-index: 1000;
+}
+
+

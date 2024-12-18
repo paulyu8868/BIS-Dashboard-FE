@@ -1,3 +1,4 @@
+/* 기존 스타일 유지 */
 .simulator-page {
     position: relative;
     width: 100vw;
@@ -26,42 +27,22 @@
     z-index: 2;
 }
 
-.simulator-container h3 {
-    margin: 0 0 10px 0;
-    font-size: 1.2rem;
-    text-align: center;
-}
-
-.simulator-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.start-button,
-.stop-button {
-    width: 48%;
-    padding: 10px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 4%;
-    background: #007bff;
+.route-details-button {
+    position: absolute;
+    bottom: 20px;
+    left: 20px; /* 좌측 하단 */
+    background-color: #007bff;
     color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    z-index: 3; /* 다른 요소 위에 표시 */
 }
 
-.stop-button {
-    background: #dc3545;
-}
-
-.start-button:hover {
-    background: #0056b3;
-}
-
-.stop-button:hover {
-    background: #a71d2a;
+.route-details-button:hover {
+    background-color: #0056b3;
 }
