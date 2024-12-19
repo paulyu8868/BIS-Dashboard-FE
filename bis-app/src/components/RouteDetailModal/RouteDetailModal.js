@@ -25,13 +25,12 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
   const [buses, setBuses] = useState([]); // 노선의 버스 정보들
 
   // 정류장 및 버스 정보 mock date도 임시로 추가했습니다. 시뮬레이터 구현 완료되면 지우고 BstpBusInfo에서 데이터 받아오게 해서 쓸 예정
-
-  const mockBusInfo = {
-    busNumber: "101",
-    checkDate: "2024-01-10",
-    capacity: "40명",
-    company: "서울교통공사",
-  };
+  // const mockBusInfo = {
+  //   busNumber: "101",
+  //   checkDate: "2024-01-10",
+  //   capacity: "40명",
+  //   company: "서울교통공사",
+  // };
 
   const mockArrivalInfo = {
     arrivals: [
@@ -60,7 +59,6 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
           // 첫 번째 정류장을 기본 선택
           if (stopsData.length > 0) {
             setSelectedStop(stopsData[0]);
-            setBusInfo(mockBusInfo);
             setArrivalInfo(mockArrivalInfo);
           }
 
@@ -125,10 +123,25 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
       bitType: currentStop.bitType || "LCD", // bitType이 없을 경우 기본값 설정
       nextStop: nextStop ? nextStop.name : "없음", // 다음 정류장이 없으면 "없음"으로 표시
     });
+  };
 
-    // BusInfo 업데이트
-    setBusInfo(mockBusInfo); // 필요에 따라 수정 가능
-    setArrivalInfo(mockArrivalInfo); // 필요에 따라 수정 가능
+  const handleBusClick = (obuId) => {
+    // API 호출하여 버스 번호 가져오기
+    fetch(`http://localhost:8080/api/simulator/${obuId}/bus-number`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("네트워크 응답이 좋지 않습니다.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setBusInfo({
+          busNumber: data.busNumber,
+        }); // 받은 버스 번호 상태 업데이트
+      })
+      .catch((error) => {
+        console.error("버스 번호 가져오기 실패:", error);
+      });
   };
 
   return (
@@ -175,6 +188,14 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
                                 src={busIcon}
                                 alt="Bus"
                                 className="bus-image"
+                                onClick={() => {
+                                  const busAtStop = buses.find(
+                                    (b) => b.sqno === stop.sqno
+                                  );
+                                  if (busAtStop) {
+                                    handleBusClick(busAtStop.obuId);
+                                  }
+                                }}
                               />
                             </div>
                           )}

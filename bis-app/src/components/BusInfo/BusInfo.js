@@ -4,7 +4,12 @@ import "./BusInfo.css";
 
 const BusInfo = ({ busInfo }) => {
   if (!busInfo) {
-    return <p className="loading-text">정보를 불러오는 중...</p>;
+    busInfo = {
+      busNumber: "-",
+      // checkDate: "-",
+      // capacity: "-",
+      // company: "-",
+    };
   }
 
   return (
@@ -16,7 +21,7 @@ const BusInfo = ({ busInfo }) => {
           <span>버스 번호</span>
           <span>{busInfo.busNumber}</span>
         </div>
-        <div className="info-row">
+        {/* <div className="info-row">
           <span>점검 일자</span>
           <span>{busInfo.checkDate}</span>
         </div>
@@ -27,7 +32,7 @@ const BusInfo = ({ busInfo }) => {
         <div className="info-row">
           <span>버스 회사</span>
           <span>{busInfo.company}</span>
-        </div>
+        </div> */}
       </div>
     </div>
   );
