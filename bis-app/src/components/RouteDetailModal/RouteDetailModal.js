@@ -5,6 +5,8 @@ import {
   fetchRouteBuses,
 } from "../../utils/routeApi";
 import BstpBusInfo from "../BstpBusinfo/BstpBusInfo"; // 정류장 및 버스 정보 컴포넌트 import
+import BusInfo from "../BusInfo/BusInfo"; // 정류장 및 버스 정보 컴포넌트 import
+import ArrivalInfo from "../ArrivalInfo/ArrivalInfo"; // 정류장 및 버스 정보 컴포넌트 import
 import "./RouteDetailModal.css";
 import busIcon from "../../images/bus_icon.png";
 
@@ -17,29 +19,21 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
   });
   const [lastStopSqno, setLastStopSqno] = useState(null); // 마지막 정류장의 sqno
   const [stationInfo, setStationInfo] = useState(null); // 정류장 및 버스 정보 Mock 데이터
+  const [busInfo, setBusInfo] = useState(null); //
+  const [arrivalInfo, setArrivalInfo] = useState(null); //
   const [selectedStop, setSelectedStop] = useState(null); // 선택된 정류장 정보
-  const [buses, setBuses] = useState([]); // 노선의 벗 ㅡ정보들
-
-  // 시뮬레이터가 구현되면 사용할 배열
-  //const [buses, setBuses] = useState([]);
-
-  // 시뮬레이터가 구현되기 전 사용할 mock data(현재는 sqno를 갱신하지 않는데 여기서 sqno가 필요해서 사용)
-  // const buses = [
-  //   { obuId: "125711004", sqno: 41 },
-  //   { obuId: "125712052", sqno: 345 },
-  //   { obuId: "125712002", sqno: 209 },
-  //   { obuId: "125712011", sqno: 201 },
-  // ];
+  const [buses, setBuses] = useState([]); // 노선의 버스 정보들
 
   // 정류장 및 버스 정보 mock date도 임시로 추가했습니다. 시뮬레이터 구현 완료되면 지우고 BstpBusInfo에서 데이터 받아오게 해서 쓸 예정
-  const mockStationInfo = {
-    stopName: "중앙역",
-    bitType: "LCD",
-    nextStop: "시청역",
+
+  const mockBusInfo = {
     busNumber: "101",
     checkDate: "2024-01-10",
     capacity: "40명",
     company: "서울교통공사",
+  };
+
+  const mockArrivalInfo = {
     arrivals: [
       { busNumber: "101", eta: "5분" },
       { busNumber: "201", eta: "12분" },
@@ -66,7 +60,8 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
           // 첫 번째 정류장을 기본 선택
           if (stopsData.length > 0) {
             setSelectedStop(stopsData[0]);
-            setStationInfo(mockStationInfo); // Mock 데이터 사용
+            setBusInfo(mockBusInfo);
+            setArrivalInfo(mockArrivalInfo);
           }
 
           fetchRouteBuses(routeId).then((busesData) => {
@@ -112,6 +107,30 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
     chunkedStops.push((i / 8) % 2 === 1 ? stopGroup.reverse() : stopGroup);
   }
 
+  const handleStopClick = (stop) => {
+    setSelectedStop(stop);
+
+    // 현재 정류장의 sqno를 기준으로 정류장 정보 업데이트
+    const currentStopIndex = stops.findIndex((s) => s.sqno === stop.sqno);
+
+    // 현재 정류장
+    const currentStop = stops[currentStopIndex];
+
+    // 다음 정류장 (있다면)
+    const nextStop = stops[currentStopIndex + 1] || null;
+
+    // stationInfo 업데이트
+    setStationInfo({
+      stopName: currentStop.name,
+      bitType: currentStop.bitType || "LCD", // bitType이 없을 경우 기본값 설정
+      nextStop: nextStop ? nextStop.name : "없음", // 다음 정류장이 없으면 "없음"으로 표시
+    });
+
+    // BusInfo 업데이트
+    setBusInfo(mockBusInfo); // 필요에 따라 수정 가능
+    setArrivalInfo(mockArrivalInfo); // 필요에 따라 수정 가능
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -143,7 +162,7 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
                     <React.Fragment key={index}>
                       <div
                         className="stop-group"
-                        onClick={() => setSelectedStop(stop)}
+                        onClick={() => handleStopClick(stop)} // 클릭 이벤트 수정
                         style={{ cursor: "pointer" }}>
                         <div className="stop">
                           <div className="stop-circle"></div>
@@ -173,6 +192,8 @@ const RouteDetailModal = ({ routeId, routeNumber, onClose }) => {
             {/* 정류장 및 버스 정보 패널 */}
             <div className="station-info-panel">
               <BstpBusInfo stationInfo={stationInfo} />
+              <BusInfo busInfo={busInfo} />
+              <ArrivalInfo arrivalInfo={arrivalInfo} />
             </div>
           </div>
         </div>
