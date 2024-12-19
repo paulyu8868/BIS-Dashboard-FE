@@ -42,6 +42,28 @@ export async function fetchRouteBusesWithStops(route_id) {
   }
 }
 
+// 노선의 운영중인 버스 위치 조회
+export async function fetchRouteBuses(route_id) {
+  const url = `${process.env.REACT_APP_BACKEND_URL}/api/simulator/locations/${route_id}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.map((bus) => ({
+      obuId: bus.obuId,
+      sqno: bus.passagePointSqNo,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch route stops:", error);
+    return [];
+  }
+}
+
 // 정류장 및 버스 도착 정보 조회
 export async function fetchStationInfo(stop_id) {
   const url = `${process.env.REACT_APP_BACKEND_URL}/api/station/${stop_id}/info`;
