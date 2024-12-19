@@ -38,7 +38,6 @@ const SimulatorForm = ({ map }) => {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log("Buses fetched:", data);
         setBuses(data);
       })
       .catch((error) => console.error("Error fetching buses:", error));
@@ -142,7 +141,6 @@ const SimulatorForm = ({ map }) => {
           const newPosition = new window.kakao.maps.LatLng(yCord, xCord);
           if (busMarkerRef.current) {
             busMarkerRef.current.setPosition(newPosition);
-            console.log("Bus marker moved to:", newPosition);
           } else {
             console.error("Bus marker reference is null.");
           }
