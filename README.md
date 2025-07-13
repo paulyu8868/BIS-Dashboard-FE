@@ -2,6 +2,8 @@
 
 ## 프로젝트 개요
 군산시 대중교통 이용 활성화를 통한 탄소중립 기여를 목표로 하는 버스정보시스템 웹 애플리케이션입니다.
+<img width="527" height="241" alt="image" src="https://github.com/user-attachments/assets/32d2648f-0aad-451c-9d03-a802057e6469" />
+
 
 ## 주요 기능
 - 실시간 버스 위치 지도 표시
